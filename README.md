@@ -1,30 +1,13 @@
 # DockerCon US 2017 Hands-On Labs (HOL)
 
-![dcus2017](images/dockercon.png)
+![dcus2017](images/fedsummit.png)
 
-This repo contains the series of hands-on labs presented at DockerCon 2017. They are designed to help you gain experience in various Docker features, products, and solutions. Depending on your experience, each lab requires between 30-45 minutes to complete. They range in difficulty from easy to advanced.
+This repo contains the series of hands-on labs presented at Docker Federal Summit 2017. They are designed to help you gain experience in various Docker features, products, and solutions. Depending on your experience, each lab requires between 20-45 minutes to complete. They range in difficulty from easy to advanced.
 
-You should be receiving an email with the necessary hostnames and credentials for the Azure VMs and Docker Datacenter clusters necessary to complete the labs. 
+You should have received a piece of paper with your login details.  
 
-After you have your email, you can then choose one or more of the following lab tutorials to go through.
 
 ---
-
-## [Continuous Integration With Docker Cloud](https://github.com/docker/dcus-hol-2017/tree/master/docker-cloud)
-
-In this lab, you will learn how to configure a continuous integration (CI) pipeline for a web application using Docker Cloud's automated build features. You will complete the following tasks as part of the lab:
-
-> **Difficulty**: Beginner
->
-> **Time**: Approximately 20 minutes
->
-> **Tasks / Concepts**
-> 
-> - Configure Docker Cloud to Automatically Build Docker Images
-> - Configure Docker Cloud Autobuilds
-> - Trigger an Autobuild
-
-
 
 ## [Docker Swarm Orchestration Beginner](https://github.com/docker/dcus-hol-2017/tree/master/docker-orchestration)
 
@@ -58,21 +41,6 @@ In this lab you will play around with the container orchestration features of Do
 > * Overlay networking
 > * Application secrets
 > * Application health checks and self-healing apps
-
-## [Securing Apps with Docker EE Advanced / Docker Trusted Registry](https://github.com/docker/dcus-hol-2017/tree/master/securing-apps-docker-enterprise)
-
-In this lab you will integrate Docker EE Advanced in to your development pipeline. You will build your application from a Dockerfile and push your image to the Docker Trusted Registry (DTR). DTR will scan your image for vulnerabilities so they can be fixed before your application is deployed. This helps you build more secure apps!
-
-
-> **Difficulty**: Beginner
->
-> **Time**: Approximately 30 minutes
->
-> **Tasks / Concepts**:
->
-> * Build a Docker Application
-> * Pushing and Scanning Docker Images
-> * Remediating Application Vulnerabilities
 
 
 ## [Docker Networking](https://github.com/docker/dcus-hol-2017/tree/master/docker-networking)
