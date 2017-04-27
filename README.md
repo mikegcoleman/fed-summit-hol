@@ -1,11 +1,9 @@
-# DockerCon US 2017 Hands-On Labs (HOL)
-
+# Docker Federal Summit 2017 Hands-On Labs 
 ![dcus2017](images/fedsummit.png)
 
-This repo contains the series of hands-on labs presented at Docker Federal Summit 2017. They are designed to help you gain experience in various Docker features, products, and solutions. Depending on your experience, each lab requires between 20-45 minutes to complete. They range in difficulty from easy to advanced.
+This repo contains the series of hands-on labs for Docker Federal Summit 2017. They are designed to help you gain experience in various Docker features, products, and solutions. Depending on your experience, each lab requires between 20-45 minutes to complete. They range in difficulty from easy to advanced.
 
 You should have received a piece of paper with your login details.  
-
 
 ---
 
