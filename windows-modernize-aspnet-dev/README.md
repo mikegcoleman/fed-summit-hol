@@ -43,11 +43,9 @@ When you encounter a phrase in between `<` and `>`  you are meant to substitute 
 
 For instance if you see `$ip = <ip-address>` you would actually type something like `$ip = '10.0.0.4'`
 
-You will be asked to RDP into various servers. You will find the actual server names to use in your welcome email. 
-
 ## <a name="prerequisites"></a>Prerequisites
 
-You will be provided a set of Windows Server 2016 virtual machines running in Azure, which are already configured with Docker and the Windows base images. You do not need Docker running on your laptop, but you will need a Remote Desktop client to connect to the VMs. 
+You will be using RDP to connect to an Azure-based VM. The connection details should have been provided to you on a piece of paper. The VM is already configured with Docker and the Windows base images. You do not need Docker running on your laptop, but you will need a Remote Desktop client to connect to the VM. 
 
 - Windows - use the built-in Remote Desktop Connection app.
 - Mac - install [Microsoft Remote Desktop](https://itunes.apple.com/us/app/microsoft-remote-desktop/id715768417?mt=12) from the app store.
@@ -211,6 +209,7 @@ Microsoft provide a SQL Server Express image on Docker Hub, which is already pul
 
 ```
 docker run --detach `
+ -p 1433:1433 `
  --env sa_password=DockerCon2017 `
  --env ACCEPT_EULA=Y `
  --name sql-server `
@@ -331,14 +330,8 @@ You'll see output from compose telling you four containers have been created; th
 
 On your laptop, browse to the VM again and you will see the same product launch website. Complete the form again - the behavior is identical to v1, but behind the scenes the web app now publishes an event to the message queue and the message handler writes your data asynchronously.
 
-You can check the data is in SQL Server by running:
 
-```
-docker exec v2src_product-launch-db_1 powershell -Command `
-  "Invoke-SqlCmd -Query 'SELECT * FROM Prospects' -Database ProductLaunch"
-```
-
-And also look at the logs of the message handler to verify that it was the handler container which wrote the data:
+Look at the logs of the message handler to verify that it was the handler container wrote the data:
 
 ```
 docker logs v2src_save-prospect-handler_1
