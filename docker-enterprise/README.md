@@ -68,29 +68,6 @@ ubuntu@node1-smwqii1akqh.southcentralus.cloudapp.azure.com's password:
 Welcome to Ubuntu 16.04.2 LTS (GNU/Linux 4.4.0-72-generic x86_64)
 ```
 
-2. Check to make sure you are running the correct Docker version. At a minimum you should be running `17.03 EE`
-
-```
-$ docker version
-Client:
- Version:      17.03.0-ee-1
- API version:  1.26
- Go version:   go1.7.5
- Git commit:   9094a76
- Built:        Wed Mar  1 01:20:54 2017
- OS/Arch:      linux/amd64
-
-Server:
- Version:      17.03.0-ee-1
- API version:  1.26 (minimum version 1.12)
- Go version:   go1.7.5
- Git commit:   9094a76
- Built:        Wed Mar  1 01:20:54 2017
- OS/Arch:      linux/amd64
- Experimental: false
- 
-```
-
 3. Run the UCP installer to install the UCP Controller node.
 
 You will have to supply the following values to the install command:
