@@ -38,7 +38,7 @@ When you encounter a phrase in between `<` and `>`  you are meant to substitute 
 
 For instance if you see `https://<node0-dns-name>` you would actually type something like `https://node0-smwqii1akqh.southcentralus.cloudapp.azure.com`.
 
-You will be asked to SSH into various nodes. In this lab these nodes are referred to as `node0`, `node1`, and `node2`, but you will use the full DNS name or IP address of the node.
+You will be asked to SSH into various nodes. In this lab these nodes are referred to as `node1`, `node2`, and `node3`. 
 
 ## <a name="prerequisites"></a>Prerequisites
 
@@ -54,10 +54,10 @@ The following task will guide you through how to create a UCP cluster on your ho
 
 ### <a name="task1.1"></a>Task 1.1: Installing the UCP Manager
 
-1. Log in to `node0` of the three nodes you have been given for this lab.  The username for all of the Linux nodes is `ubuntu` and the node will have a unique password that should be in your email. You may be prompted whether you want to continue. Answer `yes` and then enter the password.
+1. Log in to `node1` of the three nodes you have been given for this lab.  The username for all of the Linux nodes is `docker` and password is `training`. You may be prompted whether you want to continue. Answer `yes` and then enter the password.
 
 ```
-$ ssh ubuntu@node0-smwqii1akqh.southcentralus.cloudapp.azure.com
+$ ssh docker@<node1 IP Address>
 
 The authenticity of host 'node0-smwqii1akqh.southcentralus.cloudapp.azure.com (13.65.212.221)' can't be established.
 ECDSA key fingerprint is SHA256:BKHHGwzrRx/zIuO7zwvyq5boa/5o2cZD9OTlOlOWJvY.
@@ -106,7 +106,7 @@ docker/ucp:2.1.3 install \
 --debug \
 --admin-username admin \
 --admin-password <your-password> \
---san <node0-public-dns> \
+--san <node1-IP> \
 --host-address $(hostname -i)
 ```
 
@@ -118,34 +118,25 @@ docker run --rm -it --name ucp \
 docker/ucp:2.1.3 install \
 --admin-username admin \
 --admin-password docker123 \
---san node0-XXXXXXX.southcentralus.cloudapp.azure.com \
+--san 34.23.13.162 \
 --host-address $(hostname -i)
 ```
 
-It will take up to 30 seconds to install.
+You will see a lot of text scroll by.
 
-4. Log in to UCP by going to `https://<node0-public-dns>` in your browswer
+4. Log in to UCP by going to `https://<node1-IP>` in your browswer
 
 Depending on what browser you are using, you will receive a warning about the connection. Proceed through to the UCP URL. The warning is occuring because we UCP uses privately signed certificates by default. In a production installation we would add our own certificates that would be trusted by our browser.
 
 ![](images/private.png) 
 
-Log in as the user `admin` with the password that you supplied in step 3. You will be asked to upload a license. Skip this step. You will continue the lab without the license.
+Log in as the user `admin` with the password that you supplied in step 3. 
+
+> **Note**: You will be asked to upload a license. Skip this step. You will continue the lab without the license.
 
 ![](images/ucp-login.png) 
 
-You now have a UCP cluster with a single node. Next you are going to add two nodes to the cluster. These nodes are known as Worker nodes and are the nodes that host application containers. 
-
-### Optional: Add Manager Nodes for Cluster High Availability
-
-This is not a requirement for the lab but is a best practice for any production clusters.
-
-1. In the UCP GUI, click through to Resources / Nodes. Click "+ Add Node" and check the box "Add node as a manager"
-
-2. On the same screen click "Copy to Clipboard." This will copy the UCP join command.
-
-3. Log in to the other nodes that you would like to configure as managers and paste this join command on the CLI. 
-
+You now have a UCP cluster with a single node. Next you are going to add two nodes to the cluster. These nodes are known as Worker nodes and are the nodes that host application containers.  
 
 ### <a name="Task 1.2"></a>Task 1.2: Joining UCP Worker Nodes
 
@@ -161,10 +152,12 @@ docker swarm join --token SWMTKN-1-5mql67at3mftfxdhoelmufv0f50id358xyyeps4gk9odg
 
 This is a Swarm join token. It includes the IP address of the UCP/Swarm manager so do not change it in the command. It is a secret token used by nodes so that they can securely join the rest of the UCP cluster.
  
-2. Log in to `node1`.
+2. Switch back to `node1` and ssh to `node2`. 
+
+> **Note:** Because we have exchanged ssh keys and setup the `/etc/hosts` file you can simply type 
 
 ```
-$ ssh ubuntu@node1-smwqii1akqh.southcentralus.cloudapp.azure.com
+$ ssh node2
 ```
 
 3. On the command line run the Swarm join token command you copied from UCP. You will get a status message indicating that this node has joined the cluster.
@@ -178,7 +171,7 @@ This node joined a swarm as a worker.
 
 This indicates that this node is now joining your UCP cluster.
 
-4. Repeat steps 1 & 2 for `node2`
+4. Repeat steps 1 & 2 for `node3`
 
 5. Go to the UCP GUI and click on Resources / Nodes. You should now see that all of your nodes listed with their respective role as Manager or Worker.
 
@@ -327,9 +320,11 @@ Now that we have a redundant application that we can view with the Visualizer, w
 
 1. Bring the Visualizer app up in your browser. Make note of how the `pets` containers are scheduled across your hosts. They should be distributed equally across all hosts.
 
-2. Log in to the commandline of one of your worker nodes (be sure not to do this to the manager node). Shut the Docker engine off with the following command.
+2. Log in to the commandline of one of your worker nodes (`node2` or `node3`) (be sure not to do this to the manager node). Shut the Docker engine off with the following command.
 
 ```
+$ ssh node2
+
 $ sudo service docker stop
 docker stop/waiting
 ```
@@ -426,7 +421,7 @@ networks:
 
 After you cast your vote you will get redirected back to the pets landing page. 
 
-4. Refresh the page a few times with Server Another Pet. You will see the page views climb while you get served across all three `web` containers.
+4. Refresh the page a few times with Serve Another Pet. You will see the page views climb while you get served across all three `web` containers.
 
 5. Now go to the `web` service externally published `<ip>:<port>` that maps to the internal port `7000`. This page totals the number of votes that are held in the `db` backend.
 
@@ -538,7 +533,7 @@ A rolling update is a deployment method to slowly and incrementally update a ser
 
 In the following steps we will update the `pets_web` service with a new image version. We will use a purposely broken image to simulate a bad deployment. 
 
-1. Click on the `pets_web` service. On the Details page change the image to  `chrch/docker-pets:broken`. Make sure to click the green check so that the change is captured.
+1. Click on the `pets_web` service. On the Details page change the image to  `chrch/docker-pets:broken`. Make sure to click the green check so that the change is captured. **DO NOT CLICK SAVE CHANGES**
 
 2. On the Scheduling page update the following values:
    - Update Parallelism `1`
@@ -546,9 +541,9 @@ In the following steps we will update the `pets_web` service with a new image ve
    - Failure Action `pause`
    - Max Failure Ratio `0.2` (%)
 
-![](images/rolling.png)
+	![](images/rolling.png)
 
-These values mean that during a rolling update, containers will be updated `1` container at a time `5` seconds apart. If more than `20%` of the new containers fail their health checks then UCP will `pause` the rollout and wait for administrator action.
+	These values mean that during a rolling update, containers will be updated `1` container at a time `5` seconds apart. If more than `20%` of the new containers fail their health checks then UCP will `pause` the rollout and wait for administrator action.
 
 3. The changes you made are now staged but have not yet been applied. Click Save Changes. This will start the rolling update.
 
@@ -570,86 +565,8 @@ These values mean that during a rolling update, containers will be updated `1` c
 
 9. Observe a successful rolling update in the Visualizer. You will start to see each container being updated with the new image and in good health. Now go to the `<host-ip>:<port>` that corresponds to the internal port `5000`. After a couple refreshes you should see that some of the containers have already updated.
 
-10. Before you go on to the next section, delete the `pets` stack.
 
-### <a name="task3.5"></a>Task 3.5: Configuring Layer 7 Load Balancing
 
-Layer 7 load balancing in UCP can be provided by a feature called the HTTP Routing Mesh (HRM). In this section of the lab we configure HRM for several different ports and endpoints of `docker-pets`.
-
-This part of the lab requires external configuration of DNS. An external DNS provider like AWS or an internal DNS should be configured for this lab. The details of the DNS configuration is outside the scope of the tutorial.
-
-Setup: Configure a wildcard DNS entry `*.<yourdomain.com>`. You will insert your URL for `<yourdomain.com>`. You can configure this DNS record to point to a load balancer that balances across multiple UCP nodes. For a simpler configuration, you can also use the IP address of any UCP node as this DNS record.  
-
-1. In the UCP GUI go to Admin Settings / Routing Mesh. In this window, check the box to enable the routing mesh and ensure that it is serving HTTP traffic on port `80`.
-
-![](images/routing-mesh.png)
-
-2. Deploy the following compose file as the `pets` stack. Input your configured URL for `<yourdomain.com>`. In this step we are configuring three URLs, `vote.*`, `admin.*`, and `viz.*` for three different services provided by the app. Go to these URLs and ensure that they are working correctly.
-
-```
-version: '3.1'
-services:
-    web:
-        image: chrch/docker-pets:1.0
-        deploy:
-            replicas: 3
-        ports:
-            - 5000
-            - 7000
-        labels:
-                com.docker.ucp.mesh.http.5000: "external_route=http://vote.<yourdomain.com>,internal_port=5000"
-                com.docker.ucp.mesh.http.7000: "external_route=http://admin.<yourdomain.com>,internal_port=7000,sticky_sessions=paas_admin_id"
-
-        healthcheck:
-            interval: 10s
-            timeout: 2s
-            retries: 3
-        environment:
-            DB: 'db'
-            ADMIN_PASSWORD_FILE: '/run/secrets/admin_password'
-        networks:
-        	  - backend
-        	  - ucp-hrm
-        secrets:
-            - admin_password
-            
-    db:
-        image: consul:0.7.2
-        command: agent -server -ui -client=0.0.0.0 -bootstrap-expect=3 -retry-join=db -retry-join=db -retry-join=db -retry-interval 5s
-        deploy:
-            replicas: 3
-        ports:
-            - 8500 
-        environment:
-            CONSUL_BIND_INTERFACE: 'eth2'
-            CONSUL_LOCAL_CONFIG: '{"skip_leave_on_interrupt": true}'
-        networks: 
-            - backend
-
-            
-    visualizer:
-        image: manomarks/visualizer
-        ports:
-            - 8080
-        labels:
-            com.docker.ucp.mesh.http.8080: "external_route=http://viz.<yourdomain.com>,internal_port=8080"
-        deploy:
-            placement:
-                constraints: [node.role == manager]
-        volumes:
-            - /var/run/docker.sock:/var/run/docker.sock
-        networks: 
-            - ucp-hrm
-    
-networks:
-    backend:
-    ucp-hrm:
-        external: true
-
-secrets:
-    admin_password:
-        external: true
-```
 
 
 
