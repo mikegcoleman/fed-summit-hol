@@ -72,7 +72,7 @@ Welcome to Ubuntu 16.04.2 LTS (GNU/Linux 4.4.0-72-generic x86_64)
 
 You will have to supply the following values to the install command:
 - `--ucp-password` - This can be a password of your choosing
-- `--san` - This should be the public IP of `node0`
+- `--san` - This should be the public IP of `node1`
 
 You may want to open up a text editor to enter in your ucp password and `--san` value.
 
