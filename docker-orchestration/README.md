@@ -87,7 +87,7 @@ CONTAINER ID        IMAGE               COMMAND             CREATED             
 
 But, this is only on a single node. What happens if this node goes down? Well, our application just dies and it is never restarted. To restore service, we would have to manually log into this machine, and start tweaking things to get it back up and running. So, it would be helpful if we had some type of system that would allow us to run this "sleep" application/service across many machines. 
 
-In this section you will configure *Swarm Mode*. This is an optional mode in which multiple Docker hosts form into a self-orchestrating group of engines called a *swarm*. Swarm mode enables new features such as *services* and *bundles* that help you deploy and manage multi-container apps across multiple Docker hosts.
+In this section you will configure *Swarm Mode*. This is an optional mode in which multiple Docker hosts form into a self-orchestrating group of daemons/services called a *swarm*. Swarm mode enables new features such as *services* and *bundles* that help you deploy and manage multi-container apps across multiple Docker hosts.
 
 You will complete the following:
 
@@ -245,7 +245,7 @@ ID            NAME       MODE        REPLICAS  IMAGE
 of5rxsxsmm3a  pets       replicated  1/1       ubuntu:latest
 ```
 
-The state of the service may change a couple times until it is running. The image is being downloaded from Docker Hub to the other engines in the Swarm. Once the image is downloaded the container goes into a running state on one of the three nodes.
+The state of the service may change a couple times until it is running. The image is being downloaded from Docker Hub to the other daemons/services in the Swarm. Once the image is downloaded the container goes into a running state on one of the three nodes.
 
 Go ahead and check out the web page by visiting `http://<node1 IP address>:5000/`
 
