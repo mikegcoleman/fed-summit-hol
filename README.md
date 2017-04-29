@@ -7,7 +7,7 @@ You should have received a piece of paper with your login details.
 
 ---
 
-## [Docker Swarm Orchestration Beginner](https://github.com/docker/dcus-hol-2017/tree/master/docker-orchestration)
+## [Docker Swarm Orchestration](https://github.com/docker/dcus-hol-2017/tree/master/docker-orchestration)
 
 In this lab you will play around with the container orchestration features of Docker. You will deploy a simple application to a single host and learn how that works. Then, you will configure Docker Swarm Mode, and learn to deploy the same simple application across multiple hosts. You will then see how to scale the application and move the workload across different hosts easily.
 
@@ -23,7 +23,7 @@ In this lab you will play around with the container orchestration features of Do
 > * Scale the application
 > * Drain a node and reschedule the containers
 
-## [Docker Swarm Orchestration Advanced](https://github.com/docker/dcus-hol-2017/tree/master/docker-enterprise)
+## [Deploying Applications with Docker EE (Docker Datacenter)](https://github.com/docker/dcus-hol-2017/tree/master/docker-enterprise)
 
 > **Difficulty**: Intermediate to Advanced
 >
