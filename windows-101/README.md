@@ -260,7 +260,7 @@ When the application starts, browse to the VM address from your laptop browser a
 
 Go ahead and hit the button to Tweet about your lab progress! No data gets stored in the container, so your credentials are safe. 
 
-
+### Bonus activity
 As an added bonus, you could try and edit the `index.html` file (your VM has Visual Studio Code on it) and replace "DockerCon" with "Docker Federal Summit" . The rebuild your docker image, but be sure to tag your image as version 2.0
 
 ```
@@ -279,6 +279,8 @@ Now run your new version
 ```
 docker run -d -p 80:80 <DockerID>/dockercon-tweet-app:2.0 
 ```
+
+Head to your browser, and see if your changes are reflected
 
 ## Wrap Up
 
