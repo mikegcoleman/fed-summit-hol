@@ -183,7 +183,7 @@ To build the Dockerfile into a Docker image, open a PowerShell prompt on the Win
 
 ```
 cd C:\scm\github\docker\dcus-hol-2017\windows-101\tweet-app
-docker build -t <DockerID>/dockercon-tweet-app .
+docker build -t <DockerID>/fedsummit-tweet-app .
 ```
 
 -`-t` tags the image, giving it a name you use to push the image or run containers
@@ -205,7 +205,7 @@ The build command will take a little while to run, as the step to install IIS ta
 Now if you list the images and filter on the `dockercon` name, you'll see your new image:
 
 ```
-> docker image ls -f reference=*/dockercon*
+docker image ls -f reference=*/fedsummit*
 
 REPOSITORY                    TAG                 IMAGE ID            CREATED             SIZE
 sixeyed/dockercon-tweet-app   latest              a14860778046        11 minutes ago      10.4 GB
@@ -230,12 +230,12 @@ Login Succeeded
 Now upload your image to the Hub:
 
 ```
-docker push <DockerID>/dockercon-tweet-app
+docker push <DockerID>/fedsummit-tweet-app
 ```
 
 You'll see the upload progress for each layer in the Docker image. The IIS layer is almost 300MB so that will take a few seconds. The whole image is over 10GB, but the bulk of that is in the Windows Server Core base image. Those layers are already stored in Docker Hub, so they don't get uploaded - only the new parts of the image get pushed.
 
-You can browse to *https://hub.docker.com/r/&lt;DockerID&gt;/dockercon-tweet-app/* and see your newly-pushed app image. This is a public repository, so anyone can pull the image - you don't even need a Docker ID to pull public images.
+You can browse to *https://hub.docker.com/r/&lt;DockerID&gt;/fedsummit-tweet-app/* and see your newly-pushed app image. This is a public repository, so anyone can pull the image - you don't even need a Docker ID to pull public images.
 
 ## <a name="task2.3"></a>Task 2.3: Run your website in a container
 
@@ -251,7 +251,7 @@ docker container rm $(docker container ls -a -q)
 This is a web application, so you'll run it in the background and publish the HTTP port in the same way that you did with the IIS image:
 
 ```
-docker run -d -p 80:80 <DockerID>/dockercon-tweet-app 
+docker run -d -p 80:80 <DockerID>/fedsummit-tweet-app 
 ```
 
 When the application starts, browse to the VM address from your laptop browser and you'll see the web app:
@@ -266,7 +266,14 @@ As an added bonus, you could try and tweak the `index.html` file in the current 
 ```
 docker build -t <DockerID>/dockercon-tweet-app:2.0 .
 ```
-The `:2.0` creates a second version of your image. 
+> The `:2.0` creates a second version of your image. 
+
+
+Now upload your image to the Hub:
+
+```
+docker push <DockerID>/dockercon-tweet-app:2.0
+```
 
 Stop the running container
 
@@ -274,6 +281,7 @@ Stop the running container
 docker container kill $(docker container ls -a -q)
 docker container rm $(docker container ls -a -q)
 ```
+
 Now run your new version
 
 ```
@@ -287,3 +295,5 @@ Head to your browser, and see if your changes are reflected
 Thank you for taking the time to complete this lab! You now know how to use Docker on Windows, how to package your own apps as Docker images.
 
 Do try the other Windows labs here at the Docker Federal Summit, and make a note to check out the full lab suite when you get home - there are plenty more Windows walkthroughs at [docker/labs](https://github.com/docker/labs/tree/master/windows) on GitHub.
+
+
