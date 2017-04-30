@@ -57,7 +57,7 @@ In this lab you will learn about key Docker Networking concepts. You will get yo
 
 ## [Windows Docker Containers 101](https://github.com/docker/dcus-hol-2017/tree/master/windows-101)
 
-Docker runs natively on Windows 10 and Windows Server 2016. In this lab you'll learn how to package Windows applications as Docker images and run them as Docker containers. You'll learn how to create a cluster of Docker servers in swarm mode, and deploy an application as a highly-available service.
+Docker runs natively on Windows 10 and Windows Server 2016. In this lab you'll learn how to package Windows applications as Docker images and run them as Docker containers. 
 
 > **Difficulty**: Beginner 
 >
@@ -67,7 +67,7 @@ Docker runs natively on Windows 10 and Windows Server 2016. In this lab you'll l
 >
 > * Run some simple Windows Docker containers
 > * Package and run a custom app using Docker
-> * Run your app in a highly-available cluster
+> * Change an application and redploy the new container
 
 ## [Modernize .NET Apps - for Devs](https://github.com/docker/dcus-hol-2017/tree/master/windows-modernize-aspnet-dev)
 
@@ -92,7 +92,7 @@ You'll already have a process for deploying ASP.NET apps, but it probably involv
 
 In Docker, the process of packaging applications is completely automated, and the platform supports automatic update and rollback for application deployments. You can build Docker images from your existing application artifacts, and run ASP.NET apps in containers without going back to source code.
 
-This lab is aimed at ops and system admins. It steps through packaging an ASP.NET WebForms app to run in a Docker container on Windows 10 or Windows Server 2016. It starts with an MSI and ends by showing you how to run and update the application as a highly-available service on Docker swam.
+This lab is aimed at ops and system admins. It steps through packaging an ASP.NET WebForms app to run in a Docker container on Windows 10 or Windows Server 2016. It starts with an MSI and ends by showing you how to run and update the application as a service on Docker swam.
 
 >**Difficulty**: Beginner 
 >
