@@ -1,6 +1,6 @@
 # Windows Docker Containers 101
 
-Docker runs natively on Windows 10 and Windows Server 2016. In this lab you'll learn how to package Windows applications as Docker images and run them as Docker containers. You'll learn how to create a cluster of Docker servers in swarm mode, and deploy an application as a highly-available service.
+Docker runs natively on Windows 10 and Windows Server 2016. In this lab you'll learn how to package Windows applications as Docker images and run them as Docker containers. 
 
 > **Difficulty**: Beginner 
 
@@ -17,10 +17,6 @@ Docker runs natively on Windows 10 and Windows Server 2016. In this lab you'll l
 >   * [Task 2.1: Build a custom website image](#task2.1)
 >   * [Task 2.2: Push your image to Docker Hub](#task2.2)
 >   * [Task 2.3: Run your website in a container](#task2.3)
-> * [Task 3: Run your app in a highly-available cluster](#task3)
->   * [Task 3.1: Create a Docker swarm with Windows Server nodes](#task3.1)
->   * [Task 3.2: Deploy your website as a service](#task3.2)
->   * [Task 3.3: Take a node offline for maintenance](#task3.3)
 
 ## Document conventions
 
@@ -28,7 +24,7 @@ When you encounter a phrase in between `<` and `>`  you are meant to substitute 
 
 For instance if you see `$ip = <ip-address>` you would actually type something like `$ip = '10.0.0.4'`
 
-You will be asked to RDP into various servers. You will find the actual server names to use in your welcome email. 
+You will be asked to RDP into a VM-based server. You will find the actual server name to use on the slip of paper your received when you walked in. 
 
 ## <a name="prerequisites"></a>Prerequisites
 
@@ -46,7 +42,7 @@ You will build images and push them to Docker Hub, so you can pull them on diffe
 
 ## Prerequisite Task: Prepare your lab environment
 
-Start by ensuring you have the latest lab source code. RDP into one of your Azure VMs, open a PowerShell prompt from the taskbar shortcut, and clone the lab repo from GitHub:
+Start by ensuring you have the latest lab source code. RDP into your Azure VM, open a PowerShell prompt from the taskbar shortcut, and clone the lab repo from GitHub:
 
 ```
 mkdir -p C:\scm\github\docker
@@ -71,7 +67,7 @@ There are different ways to use containers:
 2. Interactively for connecting to the container like a remote server
 3. To run a single task, which could be a PowerShell script or a custom app
 
-In this section you'll try each of those options and see how Docker manages the workload. Before you start, let's check the Docker service is up and running. RDP into one of your Azure VMs, open a PowerShell prompt from the taskbar shortcut, and run:
+In this section you'll try each of those options and see how Docker manages the workload. Before you start, let's check the Docker service is up and running. RDP into your Azure VM, open a PowerShell prompt from the taskbar shortcut, and run:
 
 ```
 docker version
@@ -84,7 +80,7 @@ The Docker CLI connects to the Docker API running as a Windows Service, and you 
 This is the simplest kind of container to start with. In PowerShell run:
 
 ```
-docker run microsoft/nanoserver powershell Write-Output Hello DockerCon 2017!
+docker run microsoft/nanoserver powershell Write-Output Hello Docker Federal Summit 2017!
 ```
 
 You'll see the output written from the PowerShell command. Here's what Docker did:
@@ -264,155 +260,28 @@ When the application starts, browse to the VM address from your laptop browser a
 
 Go ahead and hit the button to Tweet about your lab progress! No data gets stored in the container, so your credentials are safe. 
 
-## <a name="task3"></a>Task 3: Run your app in a highly-available cluster
 
-Your app is packaged in a portable Docker image, and you can rebuild it any time with a simple script. You've shared it on Docker Hub and deployed it on a cloud server, but at the moment you just have a single VM serving your app. That doesn't give you high availability, and for a tier 1 app like this you'll want to avoid downtime if there are any issues with the VM.
+As an added bonus, you could try and edit the `index.html` file (your VM has Visual Studio Code on it) and replace "DockerCon" with "Docker Federal Summit" . The rebuild your docker image, but be sure to tag your image as version 2.0
 
-Docker supports failover and scaling with a clustering technology built right into the engine - [Docker swarm mode](https://docs.docker.com/engine/swarm/). You don't need anything extra to turn a set of machines into a highly-available cluster, just Windows and Docker. In the rest of this lab you'll set up a swarm of three VMs and deploy the web app on the swarm.
+```
+docker build -t <DockerID>/dockercon-tweet-app:2.0 .
+```
+The `:2.0` creates a second version of your image. 
 
- 
-## <a name="task3.1"></a> Task 3.1: Create a Docker swarm with Windows Server nodes
-
-There are two server roles in a Docker swarm - managers and workers. You'll make the VM you've use so far the manager as a reward for all the work it's done. Start by clearing down running containers again:
+Stop the running container
 
 ```
 docker container kill $(docker container ls -a -q)
 docker container rm $(docker container ls -a -q)
 ```
-
-First you need to get the internal IP address of the VM - that's so the swarm nodes can communicate privately, and the internal traffic doesn't go across the public Internet. Run `ipconfig` and make a note of the IP address - on my Azure VM it's `10.0.0.4`:
-
-```
-> ipconfig
-
-Windows IP Configuration
-
-Ethernet adapter vEthernet (HNSTransparent):
-
-   Connection-specific DNS Suffix  . : j02230nt5nmevlqwbqoh5yfxre.zx.internal.cloudapp.net
-   Link-local IPv6 Address . . . . . : fe80::75cd:7da9:b793:feed%10
-   IPv4 Address. . . . . . . . . . . : 10.0.0.4
-   Subnet Mask . . . . . . . . . . . : 255.255.240.0
-   Default Gateway . . . . . . . . . : 10.0.0.1
+Now run your new version
 
 ```
-Save the internal IP address in a PowerShell variable to use next:
-
+docker run -d -p 80:80 <DockerID>/dockercon-tweet-app:2.0 
 ```
-$ip = '<ip-address>'
-```
-
-Now switch to swarm mode. Run the `swarm init` command to initialize the swarm, specifying the local IP address for the swarm advertise and listen addresses:
-
-```
-docker swarm init --listen-addr $ip --advertise-addr $ip
-```
-
-> Your RDP session may be interrupted because of a network change when the node switches to swarm mode. It will reconnect in a few seconds.
-
-The output shows you that Docker is now in swarm mode, and it gives you the secret token you need to join other nodes to the swarm. The token is used to stop rogue nodes joining your swarm, so you should keep it secure - like a database connection string. The `swarm init` command output looks like this:
-
-```
-Swarm initialized: current node (9o59jpqkuvetmk6wqtvf8ijjx) is now a manager.
-
-To add a worker to this swarm, run the following command:
-
-    docker swarm join \
-    --token SWMTKN-1-tfytr54vhhbjb0p8jx0i3hr76hiuhijnty57p0ekp87yy8hjpr5h-0c39fibliuhuh6xlk2ek6t76fbm \
-    10.0.0.4:2377
-
-To add a manager to this swarm, run 'docker swarm join-token manager' and follow the instructions.
-```
-
-> Make a note of the join token, and the IP address of the manager node. 
-
-Now open an RDP connection to the two other VMs you have access to for this lab. On each VM, open a PowerShell session from the taskbar, run `docker version` to make sure Docker is running, and then join the swarm:
-
-```
-docker swarm join --token <swarm-token> <manager-ip-address>:2377
-```
-
-The command completes in about a second, and you'll see the output `This node joined a swarm as a worker`. 
-
-You're going to run the web app on every node in the next task, so to reduce startup time it's good to pull the image in advance. Run `docker pull` on the second and third nodes:
-
-```
-docker pull <DockerID>/dockercon-tweet-app
-```
-
-When you've joined the second and third VMs to the swarm, you can close the RDP sessions. Now you have a fully-featured cluster of Docker servers, and you'll administer the swarm from the manager node.
-
-
-## <a name="task3.2"></a> Task 3.2: Deploy your website as a service
-
-Swarm mode is an orchestration engine - you use it to deploy highly-available, scalable, distributed solutions. You don't run containers in swarm mode - instead you create services and specify the number of replicas each service should have. Replicas are just containers, but the swarm decides which node to create them on, based on the capacity of the nodes when more containers are needed.
-
-You can run your web app as a highly available service by specifying three replicas:
-
-```
-docker service create `
- --publish mode=host,target=80,published=80 `
- --replicas=3 `
- --name tweet-app `
-<DockerID>/dockercon-tweet-app
-```
-
-- `--publish` publishes the ports, but you use a special syntax in swarm mode
-- `--replicas` states how many containers should run the service
-- `--name` gives the service a name for administration and discovery
-
-Docker will create three containers from the same image, and schedule them to run across the nodes in the cluster. By default the scheduler will use different nodes for each replica if it can, but in this case it will definitely run one replica on each node, because of the host port publishing. Only one process can listen on a port, so Docker won't schedule multiple replicas on one node, because they can't share the port.
-
-Run `service ps` to see the containers which are running the service replicas:
-
-```
-> docker service ps tweet-app
-ID                  NAME                IMAGE                                NODE                DESIRED STATE       CURRENT STATE                    ERROR               PORTS
-anuh590v4a1b        tweet-app.1         sixeyed/dockercon-tweet-app:latest   win-node00          Running             Running 11 seconds ago                               *:80->80/tcp
-gon54xsxp09j        tweet-app.2         sixeyed/dockercon-tweet-app:latest   win-node01          Running             Running 2 seconds ago                                *:80->80/tcp
-pjaehhsj8xbp        tweet-app.3         sixeyed/dockercon-tweet-app:latest   win-node02          Running             Running less than a second ago                       *:80->80/tcp
-```
-
-You'll see each container is on a different node. In a production environment you would have a load balancer as the entrypoint to your application, distributing traffic among the swarm VMs. Any node can receive a request and respond to it. You would also have a healthcheck in the load balancer so traffic only reached healthy nodes - that lets you do [zero-downtime updates](https://docs.docker.com/engine/swarm/swarm-tutorial/rolling-update/) of your Docker service.
-
-## <a name="task3.3"></a> Task 3.3: Take a node offline for maintenance
-
-Rolling updates make application deployment easy. You can update a distributed app running on many nodes with a single `docker service update` command, which replaces existing containers with new containers from a new image. 
-
-That lets you update the version of your application, and also the version of the Windows base image you're using - Microsoft regularly update the base image with hotfixes. When a Windows update is released, that's when you should rebuild your images from the new Windows base and update your running services.
-
-Your host Windows servers will also need updating, and that can be more invasive - updates may be compute intensive, reducing the workload capacity of the server, and they may require a reboot. Docker swarms have a graceful feature for dealing with that. If you need to do maintenance on a server, you can change its availability and Docker will stop any running containers and take the node out of service.
-
-Try that with the third VM in your swarm. In PowerShell on the manager node, run:
-
-```
-docker node update --availability drain <vm-name>
-```
-
-Drain mode stops all running containers and ensures the node doesn't have any new containers scheduled. Run `docker node ls` and you'll see the worker is still part of the swarm, but it's in drain mode. Your web app service is still running on the other nodes:
-
-```
-> docker service ps tweet-app
-ID                  NAME                IMAGE                                NODE                DESIRED STATE       CURRENT STATE                ERROR                              PORTS
-anuh590v4a1b        tweet-app.1         sixeyed/dockercon-tweet-app:latest   win-node00          Running             Running about a minute ago                                      *:80->80/tcp
-gon54xsxp09j        tweet-app.2         sixeyed/dockercon-tweet-app:latest   win-node01          Running             Running about a minute ago                                      *:80->80/tcp
-ofgqn0t9i635        tweet-app.3         sixeyed/dockercon-tweet-app:latest   win-node00          Ready               Ready 2 seconds ago
-pjaehhsj8xbp         \_ tweet-app.3     sixeyed/dockercon-tweet-app:latest   win-node02          Shutdown            Shutdown 3 seconds ago
-```
-
-You can see here that the replica running on `win-node02` in my cluster is in the `Shutdown` state, because that's the node I've put into drain mode. You'll also see the swarm is trying to create a new replica on another node (`win-node00` in my case, the new replica is in `Ready` state). The swarm tries to maintain the service level of three replicas, but the new container will fail to start because the published port is not available on that node.
-
-While the node is in drain mode, you can run `sconfig` to start a Windows Update, or update the Docker engine. When your maintenance is done, you can put the node back into action by updating its availability from the manager node:
-
-```
-docker node update --availability active <vm-name>
-```
-
-Now when you check the service replicas, you'll see a new container starting on the node you just made active. When the container is running, the web app will be back up to the full service level.
-
 
 ## Wrap Up
 
-Thank you for taking the time to complete this lab! You now know how to use Docker on Windows, how to package your own apps as Docker images, and how to run multiple Windows servers as a Docker swarm for high-availability and scale.
+Thank you for taking the time to complete this lab! You now know how to use Docker on Windows, how to package your own apps as Docker images.
 
-Do try the other Windows labs at DockerCon, and make a note to check out the full lab suite when you get home - there are plenty more Windows walkthroughs at [docker/labs](https://github.com/docker/labs/tree/master/windows) on GitHub.
+Do try the other Windows labs here at the Docker Federal Summit, and make a note to check out the full lab suite when you get home - there are plenty more Windows walkthroughs at [docker/labs](https://github.com/docker/labs/tree/master/windows) on GitHub.
