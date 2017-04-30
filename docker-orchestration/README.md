@@ -11,9 +11,9 @@ In this lab you will play around with the container orchestration features of Do
 > * [Section #1 - What is Orchestration](#basics)
 > * [Section #2 - Configure Swarm Mode](#start-cluster)
 > * [Section #3 - Deploy applications across multiple hosts](#multi-application)
-> * [Section #4 - Scale the application](#scale-application)
+> * [Section #4 - Scale the application up and down](#scale-application)
 > * [Section #5 - Drain a node and reschedule the containers](#recover-application)
-> * [Cleaning Up](#cleanup)
+> * [Cleaning up](#cleanup)
 
 ## Document conventions
 
@@ -87,7 +87,7 @@ CONTAINER ID        IMAGE               COMMAND             CREATED             
 
 But, this is only on a single node. What happens if this node goes down? Well, our application just dies and it is never restarted. To restore service, we would have to manually log into this machine, and start tweaking things to get it back up and running. So, it would be helpful if we had some type of system that would allow us to run this "sleep" application/service across many machines. 
 
-In this section you will configure *Swarm Mode*. This is an optional mode in which multiple Docker hosts form into a self-orchestrating group of engines called a *swarm*. Swarm mode enables new features such as *services* and *bundles* that help you deploy and manage multi-container apps across multiple Docker hosts.
+In this section you will configure *Swarm Mode*. This is an optional mode in which multiple Docker hosts form into a self-orchestrating group of daemons/services called a *swarm*. Swarm mode enables new features such as *services* and *bundles* that help you deploy and manage multi-container apps across multiple Docker hosts.
 
 You will complete the following:
 
@@ -222,8 +222,6 @@ Now that you have a swarm up and running, it is time to deploy our really simple
 
 You will perform the following procedure from **node1**.
 
-## Step 3.1 - Deploy the application components as Docker services
-
 Our pets application is becoming very popular on the internet (due to hitting Reddit and HN). People just love it. So, you are going to have to scale your application to meet peak demand. You will have to do this across multiple hosts for high availability too. We will use the concept of *Services* to scale our application easily and manage many containers as a single entity.
 
 > *Services* are a new concept in Docker 1.12. They work with swarms and are intended for long-running containers.
@@ -242,16 +240,16 @@ Verify that the `service create` has been received by the Swarm manager.
 ```
 $ docker service ls
 ID            NAME       MODE        REPLICAS  IMAGE
-of5rxsxsmm3a  sleep-app  replicated  1/1       ubuntu:latest
+of5rxsxsmm3a  pets       replicated  1/1       ubuntu:latest
 ```
 
-The state of the service may change a couple times until it is running. The image is being downloaded from Docker Hub to the other engines in the Swarm. Once the image is downloaded the container goes into a running state on one of the three nodes.
+The state of the service may change a couple times until it is running. The image is being downloaded from Docker Hub to the other daemons/services in the Swarm. Once the image is downloaded the container goes into a running state on one of the three nodes.
 
 Go ahead and check out the web page by visiting `http://<node1 IP address>:5000/`
 
 Well done. You have deployed the pets app to your new Swarm using Docker services. 
 
-## Step 3.2 - Scale the app
+# <a name="scale-application"></a>Section 4 - Scale the application up and down
 
 Demand is crazy! Everybody loves your pets app! It's time to scale out.
 
@@ -265,20 +263,20 @@ Scale the number of containers in the `pets` service to 6 with the `docker servi
 $ docker service update --replicas 6 pets
 ```
 	
-The Swarm manager schedules so that there are 7 `sleep-app` containers in the cluster. These will be scheduled evenly across the Swarm members.
+The Swarm manager schedules so that there are 6 `pets` containers in the cluster. These will be scheduled evenly across the Swarm members.
 
-We are going to use the `docker service ps sleep-app` command. If you do this quick fast enough after using the  `--replicas` option you can see the containers come up in real time.
+We are going to use the `docker service ps pets` command. If you do this quick fast enough after using the  `--replicas` option you can see the containers come up in real time.
 
 ```
-$ docker service ps sleep-app
-ID            NAME         IMAGE          NODE     DESIRED STATE  CURRENT STATE          ERROR  PORTS
-7k0flfh2wpt1  sleep-app.1  ubuntu:latest  node1  Running        Running 9 minutes ago
-wol6bzq7xf0v  sleep-app.2  ubuntu:latest  node3  Running        Running 2 minutes ago
-id50tzzk1qbm  sleep-app.3  ubuntu:latest  node2  Running        Running 2 minutes ago
-ozj2itmio16q  sleep-app.4  ubuntu:latest  node3  Running        Running 2 minutes ago
-o4rk5aiely2o  sleep-app.5  ubuntu:latest  node2  Running        Running 2 minutes ago
-35t0eamu0rue  sleep-app.6  ubuntu:latest  node2  Running        Running 2 minutes ago
-44s8d59vr4a8  sleep-app.7  ubuntu:latest  node1  Running        Running 2 minutes ago
+$ docker service ps pets
+ID            NAME    IMAGE                  NODE   DESIRED STATE  CURRENT STATE          ERROR  PORTS
+7k0flfh2wpt1  pets.1  chrch/docker-pets:1.0  node1  Running        Running 9 minutes ago
+wol6bzq7xf0v  pets.2  chrch/docker-pets:1.0  node3  Running        Running 2 minutes ago
+id50tzzk1qbm  pets.3  chrch/docker-pets:1.0  node2  Running        Running 2 minutes ago
+ozj2itmio16q  pets.4  chrch/docker-pets:1.0  node3  Running        Running 2 minutes ago
+o4rk5aiely2o  pets.5  chrch/docker-pets:1.0  node2  Running        Running 2 minutes ago
+35t0eamu0rue  pets.6  chrch/docker-pets:1.0  node2  Running        Running 2 minutes ago
+44s8d59vr4a8  pets.7  chrch/docker-pets:1.0  node1  Running        Running 2 minutes ago
 ```
 
 Notice that there are now 6 containers listed. It may take a few seconds for the new containers in the service to all show as **RUNNING**.  The `NODE` column tells us on which node a container is running.
@@ -295,12 +293,12 @@ Scale the service back down just five containers again with the `docker service 
 $ docker service update --replicas 1 pets
 ```
 
-Verify that the number of containers has been reduced to 4 using the `docker service ps sleep-app` command.
+Verify that the number of containers has been reduced to 1 using the `docker service ps pets` command.
 
 ```
-$ docker service ps sleep-app
-ID            NAME         IMAGE          NODE     DESIRED STATE  CURRENT STATE           ERROR  PORTS
-7k0flfh2wpt1  sleep-app.1  ubuntu:latest  node1  Running        Running 13 minutes ago
+$ docker service ps pets
+ID            NAME    IMAGE                  NODE   DESIRED STATE  CURRENT STATE           ERROR  PORTS
+7k0flfh2wpt1  pets.1  chrch/docker-pets:1.0  node1  Running        Running 13 minutes ago
 ```
 Go ahead and revisit the web page using each of the your 3 nodes IP addresses. Since there is only one replica, there is actually only one node that can serve your web page, but as mentioned before, you can use the IP address of any node in the cluster to get to service - swarm will route your request appropriately. 
 
@@ -322,9 +320,9 @@ r1dq2luwwub6        pets.5              chrch/docker-pets:1.0   ip-172-31-60-206
 
 You have successfully scaled a swarm service up and down.
 
-## Step 3.3 - Bring a node down for maintenance.
+## <a name="recover-application"></a>Section 5 - Drain a node and reschedule the containers
 
-Your sleep-app has been doing amazing after hitting Reddit and HN. It's now number 1 on the Apple Store! You have scaled up during the holidays and down during the slow season. Now you are doing maintenance on one of your servers so you will need to gracefully take a server out of the swarm without interrupting service to your customers.
+Your pets app has been doing amazing after hitting Reddit and HN. It's now number 1 on the Apple Store! You have scaled up during the holidays and down during the slow season. Now you are doing maintenance on one of your servers so you will need to gracefully take a server out of the swarm without interrupting service to your customers.
 
 
 Take a look at the status of your nodes again by running `docker node ls` on **node1**.  
@@ -407,7 +405,7 @@ lzoaz57txwhn        pets.2              chrch/docker-pets:1.0   ip-172-31-60-146
 r1dq2luwwub6        pets.5              chrch/docker-pets:1.0   ip-172-31-60-206    Running             Running 16 minutes ago
 ```
 
-# <a name="cleanup"></a>Cleaning Up
+# <a name="cleanup"></a>Cleaning up
 
 Execute the `docker service rm pets` command on **node1** to remove the service called *pets*.
 
