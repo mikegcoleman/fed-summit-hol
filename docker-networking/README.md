@@ -1,7 +1,5 @@
 # Docker Networking
 
-Hi, welcome to the Networking lab for DockerCon 2017!
-
 In this lab you will learn about key Docker Networking concepts. You will get your hands dirty by going through examples of a few basic networking concepts, learn about Bridge networking, and finally Overlay networking.
 
 > **Difficulty**: Beginner to Intermediate
@@ -20,37 +18,37 @@ In this lab you will learn about key Docker Networking concepts. You will get yo
 
 When you encounter a phrase in between `<` and `>`  you are meant to substitute in a different value. 
 
-For instance if you see `ssh <username>@<hostname>` you would actually type something like `ssh ubuntu@node0-a.ivaf2i2atqouppoxund0tvddsa.jx.internal.cloudapp.net`
+For instance if you see `ssh <username>@<hostname>` you would actually type something like `ssh docker@10.10.10.10`
 
-You will be asked to SSH into various nodes. These nodes are referred to as **node0-a**, **node1-b**, **node2-c**, etc. These tags correspond to the very beginning of the hostnames found on the hands on labs welcome card you were given. 
+You will be asked to SSH into various nodes. These nodes are referred to as **node1**, **node2**, **node3**, etc. These tags correspond to the very hostnames found on the hands on labs welcome card you were given (the card also contains the username and password for the VMs)
 
 ## <a name="prerequisites"></a>Prerequisites
 
 This lab requires two Linux nodes with Docker 17.03 (or higher) installed.
 
-Also, please make sure you can SSH into the Linux nodes. If you haven't already done so, please SSH in to **node0-a** and **node1-b**.
+Also, please make sure you can SSH into the Linux nodes. If you haven't already done so, please SSH in to **node1** and **node2**.
 
 ```
-$ ssh ubuntu@<node0-a IP address>
+$ ssh docker@<node1 IP address>
 ```
 
 and 
 
 ```
-$ ssh ubuntu@<node1-b IP address>
+$ ssh docker@<node2 IP address>
 ```
 
 # <a name="Task 1"></a>Section #1 - Networking Basics
 
 ## <a name="list_networks"></a>Step 1: The Docker Network Command
 
-If you haven't already done so, please SSH in to **node0-a**.
+If you haven't already done so, please SSH in to **node1**.
 
 ```
-$ ssh ubuntu@<node0-a IP address>
+$ ssh docker@<node1 IP address>
 ```
 
-The `docker network` command is the main command for configuring and managing container networks. Run the `docker network` command from **node0-a**.
+The `docker network` command is the main command for configuring and managing container networks. Run the `docker network` command from **node1**.
 
 ```
 $ docker network
@@ -78,7 +76,7 @@ The command output shows how to use the command as well as all of the `docker ne
 
 ## <a name="list_networks"></a>Step 2: List networks
 
-Run a `docker network ls` command on **node0-a** to view existing container networks on the current Docker host.
+Run a `docker network ls` command on **node1** to view existing container networks on the current Docker host.
 
 ```
 $ docker network ls
@@ -98,7 +96,7 @@ You can see that each network gets a unique `ID` and `NAME`. Each network is als
 
 The `docker network inspect` command is used to view network configuration details. These details include; name, ID, driver, IPAM driver, subnet info, connected containers, and more.
 
-Use `docker network inspect <network>` on **node0-a** to view configuration details of the container networks on your Docker host. The command below shows the details of the network called `bridge`.
+Use `docker network inspect <network>` on **node1** to view configuration details of the container networks on your Docker host. The command below shows the details of the network called `bridge`.
 
 ```
 $ docker network inspect bridge
@@ -143,7 +141,7 @@ $ docker network inspect bridge
 
 The `docker info` command shows a lot of interesting information about a Docker installation.
 
-Run the `docker info` command on **node0-a** and locate the list of network plugins.
+Run the `docker info` command on **node1** and locate the list of network plugins.
 
 ```
 $ docker info
@@ -169,7 +167,7 @@ The output above shows the **bridge**, **host**,**macvlan**, **null**, and **ove
 
 ## <a name="connect-container"></a>Step 1: The Basics
 
-Every clean installation of Docker comes with a pre-built network called **bridge**. Verify this with the `docker network ls` command on **node0-a**.
+Every clean installation of Docker comes with a pre-built network called **bridge**. Verify this with the `docker network ls` command on **node1**.
 
 ```
 $ docker network ls
@@ -185,13 +183,13 @@ The output above also shows that the **bridge** network is scoped locally. This 
 
 All networks created with the *bridge* driver are based on a Linux bridge (a.k.a. a virtual switch).
 
-Install the `brctl` command and use it to list the Linux bridges on your Docker host. You can do this by running `sudo apt-get install bridge-utils` on **node0-a**.
+Install the `brctl` command and use it to list the Linux bridges on your Docker host. You can do this by running `sudo apt-get install bridge-utils` on **node1**.
 
 ```
 $ sudo apt-get install bridge-utils
 ```
 
-Then, list the bridges on your Docker host, by running `brctl show` on **node0-a**.
+Then, list the bridges on your Docker host, by running `brctl show` on **node1**.
 
 ```
 $ brctl show
@@ -201,7 +199,7 @@ docker0		8000.024252ed52f7	no
 
 The output above shows a single Linux bridge called **docker0**. This is the bridge that was automatically created for the **bridge** network. You can see that it has no interfaces currently connected to it.
 
-You can also use the `ip a` command on **node0-a** to view details of the **docker0** bridge.
+You can also use the `ip a` command on **node1** to view details of the **docker0** bridge.
 
 ```
 $ ip a
@@ -216,7 +214,7 @@ $ ip a
 
 The **bridge** network is the default network for new containers. This means that unless you specify a different network, all new containers will be connected to the **bridge** network.
 
-Create a new container on **node0-a** by running `docker run -dt ubuntu sleep infinity`.
+Create a new container on **node1** by running `docker run -dt ubuntu sleep infinity`.
 
 ```
 $ docker run -dt ubuntu sleep infinity
@@ -232,7 +230,7 @@ Status: Downloaded newer image for ubuntu:latest
 846af8479944d406843c90a39cba68373c619d1feaa932719260a5f5afddbf71
 ```
 
-This command will create a new container based on the `ubuntu:latest` image and will run the `sleep` command to keep the container running in the background. You can verify our example container is up by running `docker ps` on **node0-a**.
+This command will create a new container based on the `ubuntu:latest` image and will run the `sleep` command to keep the container running in the background. You can verify our example container is up by running `docker ps` on **node1**.
 
 ```
 $ docker ps
@@ -242,7 +240,7 @@ CONTAINER ID        IMAGE               COMMAND             CREATED             
 
 As no network was specified on the `docker run` command, the container will be added to the **bridge** network.
 
-Run the `brctl show` command again on **node0-a**.
+Run the `brctl show` command again on **node1**.
 
 ```
 $ brctl show
@@ -252,7 +250,7 @@ docker0		8000.024252ed52f7	no		vethd630437
 
 Notice how the **docker0** bridge now has an interface connected. This interface connects the **docker0** bridge to the new container just created.
 
-You can inspect the **bridge** network again, by running `docker network inspect bridge` on **node0-a**, to see the new container attached to it.
+You can inspect the **bridge** network again, by running `docker network inspect bridge` on **node1**, to see the new container attached to it.
 
 ```
 $ docker network inspect bridge
@@ -273,7 +271,7 @@ $ docker network inspect bridge
 
 The output to the previous `docker network inspect` command shows the IP address of the new container. In the previous example it is "172.17.0.2" but yours might be different.
 
-Ping the IP address of the container from the shell prompt of your Docker host by running `ping -c5 <IPv4 Address>` on **node0-a**. Remember to use the IP of the container in **your** environment.
+Ping the IP address of the container from the shell prompt of your Docker host by running `ping -c5 <IPv4 Address>` on **node1**. Remember to use the IP of the container in **your** environment.
 
 ```
 $ ping -c5 172.17.0.2
@@ -291,7 +289,7 @@ rtt min/avg/max/mdev = 0.031/0.041/0.055/0.011 ms
 
 The replies above show that the Docker host can ping the container over the **bridge** network. But, we can also verify the container can connect to the outside world too. Lets log into the container, install the `ping` program, and then ping `www.docker.com`.
 
-First, we need to get the ID of the container started in the previous step. You can run `docker ps` on **node0-a** to get that.
+First, we need to get the ID of the container started in the previous step. You can run `docker ps` on **node1** to get that.
 
 ```
 $ docker ps
@@ -299,7 +297,7 @@ CONTAINER ID        IMAGE               COMMAND             CREATED             
 846af8479944        ubuntu              "sleep infinity"    7 minutes ago       Up 7 minutes                            heuristic_boyd
 ```
 
-Next, lets run a shell inside that ubuntu container, by running `docker exec -it <CONTAINER ID> /bin/bash` on **node0-a**.
+Next, lets run a shell inside that ubuntu container, by running `docker exec -it <CONTAINER ID> /bin/bash` on **node1**.
 
 ```
 $ docker exec -it 846af8479944 /bin/bash
@@ -334,7 +332,7 @@ Finally, lets disconnect our shell from the container, by running `exit`.
 root@846af8479944:/# exit
 ```
 
-We should also stop this container so we clean things up from this test, by running `docker stop <CONTAINER ID>` on **node0-a**.
+We should also stop this container so we clean things up from this test, by running `docker stop <CONTAINER ID>` on **node1**.
 
 ```
 $ docker stop 846af8479944
@@ -349,7 +347,7 @@ In this step we'll start a new **NGINX** container and map port 8080 on the Dock
 
 > **NOTE:** If you start a new container from the official NGINX image without specifying a command to run, the container will run a basic web server on port 80.
 
-Start a new container based off the official NGINX image by running `docker run --name web1 -d -p 8080:80 nginx` on **node0-a**.
+Start a new container based off the official NGINX image by running `docker run --name web1 -d -p 8080:80 nginx` on **node1**.
 
 ```
 $ docker run --name web1 -d -p 8080:80 nginx
@@ -364,7 +362,7 @@ Status: Downloaded newer image for nginx:latest
 4e0da45b0f169f18b0e1ee9bf779500cb0f756402c0a0821d55565f162741b3e
 ```
 
-Review the container status and port mappings by running `docker ps` on **node0-a**.
+Review the container status and port mappings by running `docker ps` on **node1**.
 
 ```
 $ docker ps
@@ -378,7 +376,7 @@ Now that the container is running and mapped to a port on a host interface you c
 
 To complete the following task you will need the IP address of your Docker host. This will need to be an IP address that you can reach (e.g. your lab is hosted in Azure so this will be the instance's Public IP - the one you SSH'd into). Just point your web browser to the IP and port 8080 of your Docker host. Also, if you try connecting to the same IP address on a different port number it will fail.
 
-If for some reason you cannot open a session from a web broswer, you can connect from your Docker host using the `curl 127.0.0.1:8080` command on **node0-a**.
+If for some reason you cannot open a session from a web broswer, you can connect from your Docker host using the `curl 127.0.0.1:8080` command on **node1**.
 
 ```
 $ curl 127.0.0.1:8080
@@ -403,7 +401,7 @@ If you try and curl the IP address on a different port number it will fail.
 
 In this step you'll initialize a new Swarm, join a single worker node, and verify the operations worked.
 
-Run `docker swarm init` on **node0-a**.
+Run `docker swarm init` on **node1**.
 
 ```
 $ docker swarm init
@@ -418,13 +416,13 @@ To add a worker to this swarm, run the following command:
 To add a manager to this swarm, run 'docker swarm join-token manager' and follow the instructions.
 ```
 
-If you haven't already done so, please SSH in to **node1-b**.
+If you haven't already done so, please SSH in to **node2**.
 
 ```
-$ ssh ubuntu@<node0-a IP address>
+$ ssh docker-community@<node1 IP address>
 ```
 
-Copy the entire `docker swarm join ...` command that is displayed as part of the output from your terminal output on **node0-a**. Then, paste the copied command into the terminal of **node1-b**.
+Copy the entire `docker swarm join ...` command that is displayed as part of the output from your terminal output on **node1**. Then, paste the copied command into the terminal of **node2**.
 
 ```
 $ docker swarm join \
@@ -433,13 +431,13 @@ $ docker swarm join \
 This node joined a swarm as a worker.
 ```
 
-Run a `docker node ls` on **node0-a** to verify that both nodes are part of the Swarm.
+Run a `docker node ls` on **node1** to verify that both nodes are part of the Swarm.
 
 ```
 $ docker node ls
 ID                           HOSTNAME  STATUS  AVAILABILITY  MANAGER STATUS
-ijjmqthkdya65h9rjzyngdn48    node1-b   Ready   Active
-rzyy572arjko2w0j82zvjkc6u *  node0-a   Ready   Active        Leader
+ijjmqthkdya65h9rjzyngdn48    node2   Ready   Active
+rzyy572arjko2w0j82zvjkc6u *  node1   Ready   Active        Leader
 ```
 
 The `ID` and `HOSTNAME` values may be different in your lab. The important thing to check is that both nodes have joined the Swarm and are *ready* and *active*.
@@ -448,7 +446,7 @@ The `ID` and `HOSTNAME` values may be different in your lab. The important thing
 
 Now that you have a Swarm initialized it's time to create an **overlay** network.
 
-Create a new overlay network called "overnet" by running `docker network create -d overlay overnet` on **node0-a**.
+Create a new overlay network called "overnet" by running `docker network create -d overlay overnet` on **node1**.
 
 ```
 $ docker network create -d overlay overnet
@@ -472,7 +470,7 @@ The new "overnet" network is shown on the last line of the output above. Notice 
 
 > **NOTE:** The other new networks (ingress and docker_gwbridge) were created automatically when the Swarm cluster was created.
 
-Run the same `docker network ls` command from **node1-b**
+Run the same `docker network ls` command from **node2**
 
 ```
 $ docker network ls
@@ -486,7 +484,7 @@ a7449465c379        host                host                local
 
 Notice that the "overnet" network does **not** appear in the list. This is because Docker only extends overlay networks to hosts when they are needed. This is usually when a host runs a task from a service that is created on the network. We will see this shortly.
 
-Use the `docker network inspect <network>` command to view more detailed information about the "overnet" network. You will need to run this command from **node0-a**.
+Use the `docker network inspect <network>` command to view more detailed information about the "overnet" network. You will need to run this command from **node1**.
 
 ```
 $ docker network inspect overnet
@@ -518,7 +516,7 @@ $ docker network inspect overnet
 
 Now that we have a Swarm initialized and an overlay network, it's time to create a service that uses the network.
 
-Execute the following command from **node0-a** to create a new service called *myservice* on the *overnet* network with two tasks/replicas.
+Execute the following command from **node1** to create a new service called *myservice* on the *overnet* network with two tasks/replicas.
 
 ```
 $ docker service create --name myservice \
@@ -544,13 +542,13 @@ Verify that a single task (replica) is running on each of the two nodes in the S
 ```
 $ docker service ps myservice
 ID            NAME         IMAGE          NODE     DESIRED STATE  CURRENT STATE               ERROR  PORTS
-riicggj5tuta  myservice.1  ubuntu:latest  node1-b  Running        Running about a minute ago
-nlozn82wsttv  myservice.2  ubuntu:latest  node0-a  Running        Running about a minute ago
+riicggj5tuta  myservice.1  ubuntu:latest  node2  Running        Running about a minute ago
+nlozn82wsttv  myservice.2  ubuntu:latest  node1  Running        Running about a minute ago
 ```
 
 The `ID` and `NODE` values might be different in your output. The important thing to note is that each task/replica is running on a different node.
 
-Now that **node1-b** is running a task on the "overnet" network it will be able to see the "overnet" network. Lets run `docker network ls` from **node1-b** to verify this.
+Now that **node2** is running a task on the "overnet" network it will be able to see the "overnet" network. Lets run `docker network ls` from **node2** to verify this.
 
 ```
 $ docker network ls
@@ -563,7 +561,7 @@ a7449465c379        host                host                local
 wlqnvajmmzsk        overnet             overlay             swarm
 ```
 
-We can also run `docker network inspect overnet` on **node1-b** to get more detailed information about the "overnet" network and obtain the IP address of the task running on **node1-b**.
+We can also run `docker network inspect overnet` on **node2** to get more detailed information about the "overnet" network and obtain the IP address of the task running on **node2**.
 
 ```
 $ docker network inspect overnet
@@ -602,11 +600,11 @@ $ docker network inspect overnet
         "Labels": {},
         "Peers": [
             {
-                "Name": "node0-a-f6a6f8e18a9d",
+                "Name": "node1-f6a6f8e18a9d",
                 "IP": "10.0.0.5"
             },
             {
-                "Name": "node1-b-507a763bed93",
+                "Name": "node2-507a763bed93",
                 "IP": "10.0.0.6"
             }
         ]
@@ -614,13 +612,13 @@ $ docker network inspect overnet
 ]
 ```
 
-You should note that as of Docker 1.12, `docker network inspect` only shows containers/tasks running on the local node. This means that `10.0.0.3` is the IPv4 address of the container running on **node1-b**. Make a note of this IP address for the next step (the IP address in your lab might be different than the one shown here in the lab guide).
+You should note that as of Docker 1.12, `docker network inspect` only shows containers/tasks running on the local node. This means that `10.0.0.3` is the IPv4 address of the container running on **node2**. Make a note of this IP address for the next step (the IP address in your lab might be different than the one shown here in the lab guide).
 
 ## <a name="test"></a>Step 4: Test the network
 
-To complete this step you will need the IP address of the service task running on **node1-b** that you saw in the previous step (`10.0.0.3`).
+To complete this step you will need the IP address of the service task running on **node2** that you saw in the previous step (`10.0.0.3`).
 
-Execute the following commands from **node0-a**.
+Execute the following commands from **node1**.
 
 ```
 $ docker network inspect overnet
@@ -659,11 +657,11 @@ $ docker network inspect overnet
         "Labels": {},
         "Peers": [
             {
-                "Name": "node0-a-f6a6f8e18a9d",
+                "Name": "node1-f6a6f8e18a9d",
                 "IP": "10.0.0.5"
             },
             {
-                "Name": "node1-b-507a763bed93",
+                "Name": "node2-507a763bed93",
                 "IP": "10.0.0.6"
             }
         ]
@@ -671,9 +669,9 @@ $ docker network inspect overnet
 ]
 ```
 
-Notice that the IP address listed for the service task (container) running on **node0-a** is different to the IP address for the service task running on **node1-b**. Note also that they are one the sane "overnet" network.
+Notice that the IP address listed for the service task (container) running on **node1** is different to the IP address for the service task running on **node2**. Note also that they are one the sane "overnet" network.
 
-Run a `docker ps` command to get the ID of the service task on **node0-a** so that you can log in to it in the next step.
+Run a `docker ps` command to get the ID of the service task on **node1** so that you can log in to it in the next step.
 
 ```
 $ docker ps
@@ -689,7 +687,7 @@ $ docker exec -it d676496d18f7 /bin/bash
 root@d676496d18f7:/#
 ```
 
-Install the ping command and ping the service task running on **node1-b** where it had a IP address of `10.0.0.3` from the `docker network inspect overnet` command.
+Install the ping command and ping the service task running on **node2** where it had a IP address of `10.0.0.3` from the `docker network inspect overnet` command.
 
 ```
 root@d676496d18f7:/# apt-get update && apt-get install -y iputils-ping
@@ -711,9 +709,9 @@ The output above shows that both tasks from the **myservice** service are on the
 
 Now that you have a working service using an overlay network, let's test service discovery.
 
-If you are not still inside of the container on **node0-a**, log back into it with the `docker exec -it <CONTAINER ID> /bin/bash` command.
+If you are not still inside of the container on **node1**, log back into it with the `docker exec -it <CONTAINER ID> /bin/bash` command.
 
-Run `cat /etc/resolv.conf` form inside of the container on **node0-a**.
+Run `cat /etc/resolv.conf` form inside of the container on **node1**.
 
 ```
 $ docker exec -it d676496d18f7 /bin/bash
@@ -745,7 +743,7 @@ rtt min/avg/max/mdev = 0.020/0.042/0.056/0.015 ms
 
 The output clearly shows that the container can ping the `myservice` service by name. Notice that the IP address returned is `10.0.0.2`. In the next few steps we'll verify that this address is the virtual IP (VIP) assigned to the `myservice` service.
 
-Type the `exit` command to leave the `exec` container session and return to the shell prompt of your **node0-a** Docker host.
+Type the `exit` command to leave the `exec` container session and return to the shell prompt of your **node1** Docker host.
 
 ```
 root@d676496d18f7:/# exit
@@ -789,19 +787,19 @@ $ docker service inspect myservice
 
 Towards the bottom of the output you will see the VIP of the service listed. The VIP in the output above is `10.0.0.2` but the value may be different in your setup. The important point to note is that the VIP listed here matches the value returned by the `ping -c5 myservice` command.
 
-Feel free to create a new `docker exec` session to the service task (container) running on **node1-b** and perform the same `ping -c5 service` command. You will get a response form the same VIP.
+Feel free to create a new `docker exec` session to the service task (container) running on **node2** and perform the same `ping -c5 service` command. You will get a response form the same VIP.
 
 # <a name="cleanup"></a>Cleaning Up
 
 Hopefully you were able to learn a little about how Docker Networking works during this lab. Lets clean up the service we created, the containers we started, and finally disable Swarm mode.
 
-Execute the `docker service rm myservice` command on **node0-a** to remove the service called *myservice*.
+Execute the `docker service rm myservice` command on **node1** to remove the service called *myservice*.
 
 ```
 $ docker service rm myservice
 ```
 
-Execute the `docker ps` command on **node0-a** to get a list of running containers.
+Execute the `docker ps` command on **node1** to get a list of running containers.
 
 ```
 $ docker ps
@@ -810,21 +808,21 @@ CONTAINER ID        IMAGE               COMMAND                  CREATED        
 4e0da45b0f16        nginx               "nginx -g 'daemon ..."   12 minutes ago      Up 12 minutes       443/tcp, 0.0.0.0:8080->80/tcp   web1
 ```
 
-You can use the `docker kill <CONTAINER ID ...>` command on **node0-a** to kill the ubunut and nginx containers we started at the beginning.
+You can use the `docker kill <CONTAINER ID ...>` command on **node1** to kill the ubunut and nginx containers we started at the beginning.
 
 ```
 $ docker kill 846af8479944 4e0da45b0f16
 ```
 
-Finally, lets remove node0-a and node1-b from the Swarm. We can use the `docker swarm leave --force` command to do that. 
+Finally, lets remove node1 and node2 from the Swarm. We can use the `docker swarm leave --force` command to do that. 
 
-Lets run `docker swarm leave --force` on **node0-a**.
+Lets run `docker swarm leave --force` on **node1**.
 
 ```
 $ docker swarm leave --force
 ```
 
-Lets also run `docker swarm leave --force` on **node1-b**.
+Lets also run `docker swarm leave --force` on **node2**.
 
 ```
 $ docker swarm leave --force
