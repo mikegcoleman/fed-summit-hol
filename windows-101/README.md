@@ -47,7 +47,7 @@ Start by ensuring you have the latest lab source code. RDP into your Azure VM, o
 ```
 mkdir -p C:\scm\github\docker
 cd C:\scm\github\docker
-git clone https://github.com/docker/dcus-hol-2017.git
+git clone https://github.com/mikegcoleman/fed-summit-hol.git
 ```
 
 Now clear up anything left from a previous lab. You only need to do this if you have used this VM for one of the other Windows labs, but you can run it sefaly to restore Docker to a clean state. 
@@ -182,13 +182,13 @@ The Docker platform has the capability to build, ship and run software.
 To build the Dockerfile into a Docker image, open a PowerShell prompt on the Windows VM, change to the `tweet-app` directory and run the `docker build` command:
 
 ```
-cd C:\scm\github\docker\dcus-hol-2017\windows-101\tweet-app
+cd C:\scm\github\docker\fed-summit-hol\windows-101\tweet-app
 docker build -t <DockerID>/fedsummit-tweet-app .
 ```
 
 -`-t` tags the image, giving it a name you use to push the image or run containers
 
-> Be sure to use your Docker ID in the image tag. You will share it on Docker Hub in the next step, and you can only do that if you use your ID. My Docker ID is `sixeyed`, so I run `docker build -t sixeyed/dockercon-tweet-app` 
+> Be sure to use your Docker ID in the image tag. You will share it on Docker Hub in the next step, and you can only do that if you use your ID. My Docker ID is `sixeyed`, so I run `docker build -t sixeyed/fedsummit-tweet-app` 
 
 You'll see output on the screen as Docker runs each instruction in the Dockerfile, starting like this:
 
@@ -202,13 +202,13 @@ Step 2/10 : SHELL powershell -Command $ErrorActionPreference = 'Stop'; $Progress
 
 The build command will take a little while to run, as the step to install IIS takes a while in Windows. Once it's built you'll see a `Successfully built...` message. If you repeat the `docker build` command again, it will complete in seconds. That's because Docker caches the [image layers](https://docs.docker.com/engine/userguide/storagedriver/imagesandcontainers/) and only runs instructions if the Dockerfile has changed since the cached version.
 
-Now if you list the images and filter on the `dockercon` name, you'll see your new image:
+Now if you list the images and filter on the `fedsummit` name, you'll see your new image:
 
 ```
 docker image ls -f reference=*/fedsummit*
 
 REPOSITORY                    TAG                 IMAGE ID            CREATED             SIZE
-sixeyed/dockercon-tweet-app   latest              a14860778046        11 minutes ago      10.4 GB
+sixeyed/fedsummit-tweet-app   latest              a14860778046        11 minutes ago      10.4 GB
 ```
 
 Docker has built the image but it's only stored on the local machine. Next we'll push it to a public repository.
@@ -264,7 +264,7 @@ Go ahead and hit the button to Tweet about your lab progress! No data gets store
 As an added bonus, you could try and tweak the `index.html` file in the current directory (your VM has Visual Studio Code on it). Then rebuild your docker image, but be sure to tag your image as version 2.0
 
 ```
-docker build -t <DockerID>/dockercon-tweet-app:2.0 .
+docker build -t <DockerID>/fedsummit-tweet-app:2.0 .
 ```
 > The `:2.0` creates a second version of your image. 
 
@@ -272,7 +272,7 @@ docker build -t <DockerID>/dockercon-tweet-app:2.0 .
 Now upload your image to the Hub:
 
 ```
-docker push <DockerID>/dockercon-tweet-app:2.0
+docker push <DockerID>/fedsummit-tweet-app:2.0
 ```
 
 Stop the running container
@@ -285,7 +285,7 @@ docker container rm $(docker container ls -a -q)
 Now run your new version
 
 ```
-docker run -d -p 80:80 <DockerID>/dockercon-tweet-app:2.0 
+docker run -d -p 80:80 <DockerID>/fedsummit-tweet-app:2.0 
 ```
 
 Head to your browser, and see if your changes are reflected
