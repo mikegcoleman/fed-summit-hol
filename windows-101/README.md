@@ -256,7 +256,7 @@ docker run -d -p 80:80 <DockerID>/fedsummit-tweet-app
 
 When the application starts, browse to the VM address from your laptop browser and you'll see the web app:
 
-![The DockerCon Tweet app in a Windows Server Core container](images/tweet-app.png)
+![The DockerCon Tweet app in a Windows Server Core container](images/tweetapp.png)
 
 Go ahead and hit the button to Tweet about your lab progress! No data gets stored in the container, so your credentials are safe. 
 
@@ -278,8 +278,7 @@ docker push <DockerID>/fedsummit-tweet-app:2.0
 Stop the running container
 
 ```
-docker container kill $(docker container ls -a -q)
-docker container rm $(docker container ls -a -q)
+docker container rm -f $(docker container ls -a -q)
 ```
 
 Now run your new version
