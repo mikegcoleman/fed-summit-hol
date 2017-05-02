@@ -287,7 +287,7 @@ Now point your browser at `http://<node2 IP address>:5000/` and then `http://<no
 
 Notice how regardless of which IP you used, Swarm could still serve up  your web app. Every node in the Swarm knows how to find any service running on any of the nodes. 
 
-Scale the service back down just five containers again with the `docker service update --replicas1 pets` command. 
+Scale the service back down just five containers again with the `docker service update --replicas 1 pets` command. 
 
 ```
 $ docker service update --replicas 1 pets
