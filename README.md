@@ -7,7 +7,7 @@ You should have received a piece of paper with your login details.
 
 ---
 
-## [Docker Swarm Orchestration](https://github.com/docker/dcus-hol-2017/tree/master/docker-orchestration)
+## [Docker Swarm Orchestration](https://github.com/mikegcoleamn/fed-summit-hol/tree/master/docker-orchestration)
 
 In this lab you will play around with the container orchestration features of Docker. You will deploy a simple application to a single host and learn how that works. Then, you will configure Docker Swarm Mode, and learn to deploy the same simple application across multiple hosts. You will then see how to scale the application and move the workload across different hosts easily.
 
@@ -23,7 +23,7 @@ In this lab you will play around with the container orchestration features of Do
 > * Scale the application
 > * Drain a node and reschedule the containers
 
-## [Deploying Applications with Docker EE (Docker Datacenter)](https://github.com/docker/dcus-hol-2017/tree/master/docker-enterprise)
+## [Deploying Applications with Docker EE (Docker Datacenter)](https://github.com/mikegcoleamn/fed-summit-hol/tree/master/docker-enterprise)
 
 > **Difficulty**: Intermediate to Advanced
 >
@@ -41,7 +41,7 @@ In this lab you will play around with the container orchestration features of Do
 > * Application health checks and self-healing apps
 
 
-## [Docker Networking](https://github.com/docker/dcus-hol-2017/tree/master/docker-networking)
+## [Docker Networking](https://github.com/docker/mikegcoleamn/fed-summit-hol/tree/master/docker-networking)
 
 In this lab you will learn about key Docker Networking concepts. You will get your hands dirty by going through examples of a few basic networking concepts, learn about Bridge and Overlay networking, and finally learning about the Swarm Routing Mesh.
 
@@ -55,7 +55,7 @@ In this lab you will learn about key Docker Networking concepts. You will get yo
 > * Bridge Networking
 > * Overlay Networking
 
-## [Windows Docker Containers 101](https://github.com/docker/dcus-hol-2017/tree/master/windows-101)
+## [Windows Docker Containers 101](https://github.com/mikegcoleamn/fed-summit-hol/tree/master/windows-101)
 
 Docker runs natively on Windows 10 and Windows Server 2016. In this lab you'll learn how to package Windows applications as Docker images and run them as Docker containers. 
 
@@ -69,7 +69,7 @@ Docker runs natively on Windows 10 and Windows Server 2016. In this lab you'll l
 > * Package and run a custom app using Docker
 > * Change an application and redploy the new container
 
-## [Modernize .NET Apps - for Devs](https://github.com/docker/dcus-hol-2017/tree/master/windows-modernize-aspnet-dev)
+## [Modernize .NET Apps - for Devs](https://github.com/mikegcoleamn/fed-summit-hol/tree/master/windows-modernize-aspnet-dev)
 
 You can run full .NET Framework apps in Docker using the [Windows Server Core](https://hub.docker.com/r/microsoft/windowsservercore/) base image from Microsoft. That image is a headless version of Windows Server 2016, so it has no UI but it has all the other roles and features available. Building on top of that there are also Microsoft images for [IIS](https://hub.docker.com/r/microsoft/iis/) and [ASP.NET](https://hub.docker.com/r/microsoft/aspnet/), which are already configured to run ASP.NET and ASP.NET 3.5 apps in IIS.
 
@@ -86,7 +86,7 @@ This lab steps through porting an ASP.NET WebForms app to run in a Docker contai
 > - Use a feature-driven approach to address problems in the existing application, without an extensive re-write.
 > - Use the Dockerfile and Docker Compose syntax to replace manual deployment documents.
 
-## [Modernize .NET Apps - for Ops](https://github.com/docker/dcus-hol-2017/tree/master/windows-modernize-aspnet-ops)
+## [Modernize .NET Apps - for Ops](https://github.com/mikegcoleamn/fed-summit-hol/tree/master/windows-modernize-aspnet-ops)
 
 You'll already have a process for deploying ASP.NET apps, but it probably involves a lot of manual steps. Work like copying application content between servers, running interactive setup programs, modifying configuration items and manual smoke tests all add time and risk to deployments. 
 
